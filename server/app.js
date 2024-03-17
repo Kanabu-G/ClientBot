@@ -1,5 +1,6 @@
 const express = require("express");
 const openai = require("openai");
+const cors = require("cors"); // Import CORS middleware
 require("dotenv").config(); // Load environment variables from .env file
 
 const app = express();
@@ -7,6 +8,11 @@ const port = process.env.PORT || 3000;
 
 // Set OpenAI API key securely (from environment variable)
 openai.apiKey = process.env.OPENAI_API_KEY;
+
+// Use CORS middleware to allow requests only from your client-side origin
+app.use(cors({
+  origin: 'https://clientbot-9sb8.onrender.com' // Replace with your client-side origin
+}));
 
 // Endpoint to handle chatbot responses
 app.post("/api/chatbot", async (req, res) => {
@@ -30,6 +36,9 @@ app.post("/api/chatbot", async (req, res) => {
     res.status(500).json({ error: "Failed to generate response" }); // Send error response
   }
 });
+
+// Allow requests to the OpenAI API without CORS restrictions
+app.use('/api/openai', cors());
 
 // Start the server
 app.listen(port, () => {
