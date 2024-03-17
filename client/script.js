@@ -8,7 +8,7 @@ async function sendMessage() {
   
     try {
       // Send request to server-side endpoint
-      const response = await fetch('/api/chatbot', {
+      const response = await fetch('https://serverbot-7nla.onrender.com/api/chatbot', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
