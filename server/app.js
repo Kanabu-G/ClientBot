@@ -14,31 +14,30 @@ app.use(cors({
   origin: 'https://clientbot-9sb8.onrender.com' // Replace with your client-side origin
 }));
 
-// Endpoint to handle chatbot responses
+// Function to interact with the OpenAI API and generate chatbot response
+async function generateChatbotResponse(userInput) {
+  try {
+    const completion = await openai.completions.create({
+      model: "gpt-3.5-turbo-instruct",
+      prompt: userInput,
+    });
+    return completion.choices[0].text;
+  } catch (error) {
+    throw new Error("Failed to generate chatbot response");
+  }
+}
+
+// Route handler for /api/chatbot
 app.post("/api/chatbot", async (req, res) => {
   try {
     const userInput = req.body.userInput;
-
-    // Get response from OpenAI API
-    const response = await openai.createCompletion({
-      model: "gpt-3.5-turbo-instruct", // You can adjust the model here
-      prompt: userInput,
-      max_tokens: 150, // Optional: Limit response length
-      ...otherOpenAIOptions // Add other API options if needed
-    });
-
-    const botResponse = response.data.choices[0].text;
-
-    // Send response back to client
+    const botResponse = await generateChatbotResponse(userInput);
     res.json({ response: botResponse });
   } catch (error) {
-    console.error("Error communicating with OpenAI API:", error);
-    res.status(500).json({ error: "Failed to generate response" }); // Send error response
+    console.error("Error generating chatbot response:", error);
+    res.status(500).json({ error: "Failed to generate chatbot response" });
   }
 });
-
-// Allow requests to the OpenAI API without CORS restrictions
-app.use('/api/openai', cors());
 
 // Start the server
 app.listen(port, () => {
