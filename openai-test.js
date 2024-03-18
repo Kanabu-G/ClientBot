@@ -5,8 +5,8 @@ const openai = new OpenAI.default({ apiKey: process.env.OPENAI_API_KEY });
 async function main() {
   try {
     const completion = await openai.completions.create({
-      model: "gpt-3.5-turbo-instruct", // Use the replacement model
       prompt: "You are a helpful assistant.", // Provide the prompt directly
+      model: "gpt-3.5-turbo-instruct", // Specify the model here
     });
 
     console.log(completion.choices[0].text);

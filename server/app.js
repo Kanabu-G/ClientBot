@@ -16,6 +16,10 @@ app.use(cors({
 
 // Function to interact with the OpenAI API and generate chatbot response
 async function generateChatbotResponse(userInput) {
+  if (!userInput || userInput.trim() === '') {
+    throw new Error("User input is empty or invalid");
+  }
+
   try {
     const completion = await openai.completions.create({
       model: "gpt-3.5-turbo-instruct",
@@ -23,7 +27,7 @@ async function generateChatbotResponse(userInput) {
     });
     return completion.choices[0].text;
   } catch (error) {
-    throw new Error("Failed to generate chatbot response");
+    throw new Error("Failed to generate chatbot response from OpenAI API: " + error.message);
   }
 }
 
@@ -35,7 +39,7 @@ app.post("/api/chatbot", async (req, res) => {
     res.json({ response: botResponse });
   } catch (error) {
     console.error("Error generating chatbot response:", error);
-    res.status(500).json({ error: "Failed to generate chatbot response" });
+    res.status(500).json({ error: "Failed to generate chatbot response. Please try again later." });
   }
 });
 
