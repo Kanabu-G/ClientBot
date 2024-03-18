@@ -54,7 +54,7 @@ async function generateChatbotResponse(userInput) {
 }
 
 // Route handler for /api/chatbot
-app.post("/api/chatbot", async (req, res) => {
+app.post("/v1/completions", async (req, res) => {
   try {
     const userInput = req.body.userInput;
     const botResponse = await generateChatbotResponse(userInput);
@@ -64,6 +64,7 @@ app.post("/api/chatbot", async (req, res) => {
     res.status(500).json({ error: "Failed to generate chatbot response. Please try again later." });
   }
 });
+
 
 // Start the server
 app.listen(port, () => {
