@@ -16,18 +16,40 @@ app.use(cors({
 
 // Function to interact with the OpenAI API and generate chatbot response
 async function generateChatbotResponse(userInput) {
+  // Check if userInput is empty or invalid
   if (!userInput || userInput.trim() === '') {
     throw new Error("User input is empty or invalid");
   }
 
   try {
-    const completion = await openai.completions.create({
-      model: "gpt-3.5-turbo-instruct",
+    // Initialize OpenAI API client with your API key
+    const client = new openai.OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+
+    // Make request to OpenAI API to generate chatbot response
+    const response = await client.completions.create({
+      model: "gpt-3.5-turbo-instruct", // Specify the model
       prompt: userInput,
     });
-    return completion.choices[0].text;
+
+    // Extract chatbot response from API response
+    const botResponse = response.choices[0].text;
+
+    // Return the chatbot response
+    return botResponse;
   } catch (error) {
-    throw new Error("Failed to generate chatbot response from OpenAI API: " + error.message);
+    // Log error for debugging purposes
+    console.error("Error generating chatbot response:", error);
+
+    // Throw an error or return a meaningful response based on the specific error
+    if (error.response && error.response.data && error.response.data.error) {
+      // If the error is from the OpenAI API response, return the error message
+      throw new Error(error.response.data.error.message);
+    } else {
+      // If the error is not from the OpenAI API response, return a generic error message
+      throw new Error("Failed to generate chatbot response. Please try again later.");
+    }
   }
 }
 
